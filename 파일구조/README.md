@@ -15,6 +15,7 @@
     * 포인터를 가지고 있는 data block은 실제 data block을 가르키는 포인터를 가지고 있음
     * 블록의 크키가 4KB, CPU의 word가 32bit라고 하면, single indirect로 종 1024개의 data block pointer를 저장할 수 있음
     * double indirect는 이중으로 돼있어서 총 1024^2개의 data block pointer 저장
+  ![inode](../img/inode.jpg)
 * slotted page
   * data block안의 레코드의 정보를 효율적으로 관리하기 위한 방법
   * 헤더에 해당 data block의 레코드 정보를 저장, 헤더는 주로 block의 끝에 있음
@@ -25,4 +26,4 @@
   * 클수록 disk access 회수를 줄일 수 있음
   * storage utilization - blocking factor * record size / block size
     * 최대 1, 너무 1에 가까워지면 overflow 발생 확률 높아짐
-* todo: static & dynamic hash, block overflow
+* todo: static & dynamic hash, block overflow, external sort
