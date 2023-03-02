@@ -1,9 +1,11 @@
 * **Encryption algorithm**
   * Symmetric
     * 대표적으로 DES
+    * **todo:** details..
     * 3-DES, AES...
   * Asymmetric
     * 대표적으로 RSA
+    * **todo:** details...
 * **HTTPS**
   * 클라이언트(주로 브라우저)가 서버로 특정 자원을 요청함
   * 서버는 클라이언트가 secure connection을 만들 수 있는 공개 키가 포함된 인증서를 보냄
