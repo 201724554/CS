@@ -40,3 +40,5 @@
     * **todo**
   * Paging
     * **todo**
+* **Linux**
+  * **todo** OOM killer
