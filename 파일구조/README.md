@@ -19,6 +19,7 @@
 * slotted page
   * data block안의 레코드의 정보를 효율적으로 관리하기 위한 방법
   * 헤더에 해당 data block의 레코드 정보를 저장, 헤더는 주로 block의 끝에 있음
+    * 이 부분은 파일 시스템이나 DBMS에 따라 상이할 수 있음
   * 헤더는 레코드 수, 각 레코드의 크기, 블록의 빈 공간의 마지막 위치 정보 포함
 * blocking factor
   * block 당 record 수
