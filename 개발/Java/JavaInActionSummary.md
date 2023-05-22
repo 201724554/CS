@@ -76,3 +76,47 @@
   * **how? - 아직 헷갈림, todo**
 </div>
 </details>
+
+<details>
+<summary>chapter 4 ~ 6</summary>
+<div markdown="1">
+
+* Stream
+  * Java 8에 추가된 기능
+  * 선언형으로 컬렉션을 처리할 수 있음
+    * Java 8 이전에는 명령형으로 컬렉션을 처리해야 했음 
+    * 뭔가를 하려면 처음부터 끝까지 모든 작업을 일일히 선언해야 했음
+    ```
+    List<Dish> lowCaloricDishes = new ArrayList<>();
+    for(Dish dish : dishes) {
+      if(dish.getCalorie() < 400) {
+        lowCaloricDishes.adD(dish);
+      }
+    }
+    ```
+    * Stream을 이용하면 명령형과 달리 how가 아니라 what에 집중할 수 있음
+    ```
+    List<Dish> lowCaloricDishes = dishes.stream()
+                                        .filter(dish -> dish.getCalorie() < 400)
+                                        .collect(toList());
+    ```
+    * 이로 인한 소프트웨어공학적 이득을 취할 수 있음
+  * 멀티스레드 코드를 직접 구현하지 않고 병렬적으로 처리할 수 있음
+  * 2가지 중요 특성
+    * 파이프라이닝
+      * 스트림 연산은 스트림 연산끼리 연결해 파이프라인을 구성할 수 있도록 스트림 자신을 반환함
+      * 빌더 패턴과 유사한 형식으로 중간 연산을 이용해 데이터를 가공하고 최종 연산으로 결과물을 반환하는 형식
+      * 이로 인해 laziness, short-circuiting과 같은 최적화도 얻을 수 있음
+      * laziness - 이론상 요구할 때만 값을 계산함, 모든 값을 메모리에 올리는 컬렉션과의 차이
+    * 내부 반복
+      * 명시적으로 반복자를 사용하는 컬렉션과 달리 알아서 반복을 처리하고 스트림 값을 저장해주는 내부 반복을 사용함
+      * 즉, 추상화
+      ```
+      for(Integer i : Integers) { ... } // 외부 반복
+      Integers.stream().map(i -> i + 2).collect(toList()) // 내부 반복
+      ```
+
+
+
+</div>
+</details>
