@@ -124,7 +124,77 @@
     * 외에도 sorted, distinct와 같은 연산은 작업을 위해 모든 요소를 기록해야 하고, 요소가 버퍼에 추가돼 있어야 함
     * 이런 연산은 stateful 연산
 
-
-
+  * reduce와 같은 최종 연산을 통해 stream을 원하는 형태의 데이터로 변환할 수 있음
+    * 기본적으로 stream API에 정의된 reduce, sum과 같은 메소드 외에 Collectors 인터페이스를 이용할 수 있음
+    * Collectors.groupingBy, partitioningBy, counting, maxBy, minBy, reducing 등 여러가지 메소드 존재
+    
+  * Collector 인터페이스는 다음과 같음
+    ```
+      public interface Collector<T, A, R> {
+        Supplier<A> supplier();
+        Biconsumer<A, T> accumulator();
+        Function<A, R> finisher();
+        BinaryOperator<A> combiner();
+        Set<Characteristics> characteristics();
+      }
+    ```
+    * T는 수집될 스트림 항목의 제네릭 형식
+    * A는 수집 과정에서 중간 결과를 누적하는 객체의 형식
+    * R는 연산 결과를 나타내는 객체의 형식
+    * 예를 들어, 모든 요소를 List<T>로 수집하는 toListCollector<T>를 구현할 수 있음
+    ```
+      public class ToListCollector<T> implements Collector<T, List<T>, List<T>>
+    ```
+    * supplier()는 빈 결과로 이루어진 Supplier를 반환해야 함
+      * 수집 과정에서 사용할 비어있는 누적자를 만들기 위한 함수
+      * ToListCollector의 경우, Supplier를 다음과 같이 정의할 수 있음
+    ```
+      // Supplier<A> -> Supplier<List<T>>
+      public Supplier<List<T>> supplier() {
+        return () -> new ArrayList<T>();
+      }
+    ```
+    * accumulator()는 리듀싱 연산을 수행하는 함수를 반환함
+      * 스트림에서 n번째 요소를 탐색할 때, 누적자와 해당 요소를 함수에 적용함
+      * ToListCollector의 경우, 다음과 같이 정의할 수 있음
+    ```
+      public Biconsumer<List<T>, T> accumulator() {
+        return (list, item) -> list.add(item);
+      }
+    ```
+    * finisher()는 스트림 탐색을 끝내고 누적자 객체를 최종 결과로 변환할 함수를 반환함
+      * ToListCollector의 경우, 누적자가 곧 결과이므로 다음과 같이 정의할 수 있음
+    ```
+      public Function<List<T>, List<T>> finisher() {
+        return Function.identity();
+      }
+    ```
+    * 위 3가지 메소드로 구현한 Collector의 동작은 다음과 같다
+    ```
+      start - collector.supplier().get();
+      while(!stream.empty()) - T next; collector.accumulator().accept(accumulator, next);
+      finish - return collector.finisher().apply(accumulator);
+    ```
+    * combiner()는 스트림의 서로 다른 서브파트를 병렬로 처리할 때 누적자가 각 서브파트의 결과를 어떻게 처리할지 정의함
+      * combiner()를 사용하는 과정은 다음과 같음
+        1. 스트림을 2개의 서브파트로 분할
+        2. 각 서브파트가 충분히 작은 스트림이 될 때까지 반복
+        3. 각 서브파트를 supplier(), accumulator(), finisher()를 이용해 병렬로 처리
+        4. 처리된 각 서브파트의 결과를 combiner()로 **병렬로** 합치기
+        5. finisher()를 이용해 최종 결과로 변환
+      * ToListCollector의 경우 다음과 같이 정의할 수 있음
+    ```
+      public BinaryOperator<List<T>> combiner(){
+        return (list1, list2) -> {
+          list1.addAll(list2);
+          return list1;
+        }
+      }
+    ```
+    * characteristic()의 경우, Characteristics 타입의 불변 Set를 반환함
+      * Characteristics는 스트림을 병렬로 리듀스할 건지, 병렬로 리듀스한다면 어떤 최적화를 선택해야 할지 힌트를 제공함
+      * UNORDERED - 리듀싱의 결과는 스트림 요소의 방문 순서나 누적 순서에 영향을 받지 않는다
+      * CONCURRENT - 다중 스레드에서 accumulator 함수를 동시에 호출할 수 있고 이 Collector는 스트림의 병렬 리듀싱을 수행할 수 있다
+      * IDENTITY_FINISH - finisher()가 반환하는 함수는 단순히 identity()를 적용하므로 이를 생략할 수 있다, 즉 누적자를 결과로 그대로 사용 가능
 </div>
 </details>
