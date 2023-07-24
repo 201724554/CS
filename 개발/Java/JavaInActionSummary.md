@@ -201,3 +201,10 @@
       * IDENTITY_FINISH - finisher()가 반환하는 함수는 단순히 identity()를 적용하므로 이를 생략할 수 있다, 즉 누적자를 결과로 그대로 사용 가능
 </div>
 </details>
+
+<details>
+<summary>chapter 7 ~ 9</summary>
+<div markdown="1">
+
+</div>
+</details>
