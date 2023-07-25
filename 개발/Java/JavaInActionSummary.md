@@ -206,5 +206,28 @@
 <summary>chapter 7 ~ 9</summary>
 <div markdown="1">
 
+* **병렬 스트림**
+  *  ```parallelStream```을 이용하거나 기존 스트림에 ```parallel()```을 추가함으로써 병렬 스트림을 사용할 수 있음
+  *  내부적으로 ```ForkJoinPool```을 사용함
+  *  병렬 스트림 사용이 항상 성능의 향상으로 이어지지는 않음
+  *  ```
+     Stream.iterate(1L, i -> i + 1).limit(N).reduce(0:, Long::max); 
+     ```
+     *  해당 코드를 병렬로 실행한 결과와 for문을 이용한 순차적 방법을 이용한 결과는 N = 10,000,000일 때 대략 200배 정도 for문이 빨랐음
+     *  원인으로 2가지를 지목할 수 있음
+       1. iterate로 박싱된 객체가 생성되므로 Long::max를 수행하기 위해 언박싱을 해야 함
+       2. **reduce가 실행될 시점에 전체 숫자 리스트가 준비되지 않음**
+          * iterate는 본질적으로 순차적임 -> 처음 seed 값에 일정 값을 더하는 식으로 실행됨
+          * 따라서 스트림을 병렬로 수행하기 위한 데이터 분할을 제대로 수행할 수 없고 스레드를 할당하는 오버헤드만 증가함
+          * 일반 for문은 순차, 병렬 스트림은 순차(iterate) + reduce(스레드 할당 + 순차(Long::max))    
+  *  여러 스레드가 동시에 연산을 수행하므로 race condition에도 유의해야함
+  *  이런 문제를 해결하기 위해 기본형 특화 스트림을 사용하는 것도 고려할 수 있음 -> 박싱 비용 X
+  *  ```findFirst()```와 같은 요소의 순서에 영향을 받는 연산 또한 병렬 스트림에서의 성능이 나쁨
+  *  적절한 자료구조를 사용하는 것도 중요함
+     * ex. ArrayList가 LinkedList보다 효율적으로 분할됨 -> LinkedList 탐색 시간복잡도 O(n), ArrayList O(1)
+     * ArrayList, Intstream.range -> excellent / HashSet, TreeSet -> good / LinkedList, Stream.iterate -> bad
+  *  파이프라인의 중간에서 스트림의 특성 변화도 병렬 실행에 영향을 미침 -> filter와 같은 연산은 스트림의 길이을 예측할 수 없게 만듦 -> 효율적인 분할 X
+  *  병렬 실행 후, 병합 과정의 비용 또한 고려해야함 -> 병합 과정이 비싸면 병렬 실행의 성능이 상쇄될 수 있음
+    
 </div>
 </details>
