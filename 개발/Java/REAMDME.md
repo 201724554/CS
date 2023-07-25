@@ -148,8 +148,22 @@
      *  Open Addressing - 다른 비어있는 버킷을 찾아 삽입
         *  Linear Probing - 순차적으로 비어있는 버킷 탐색
         *  Quadratic Probing - 2차함수(?)를 이용해 버킷 탐색
-     *  Seperate Chaining - 중복되는 버킷을 기준으로 LinkedList or Red-Black Tree 사용
+     *  Seperate Chaining - 중복되는 버킷을 기준으로 LinkedList or Red-Black Tree 사용(Java 8)
         *  각 버킷을 head로 지정하고 중복 발생시 add 하는 방법(자료구조만 다름)
      *  Java는 Seperate Chaining 사용
+        * Open Addressing은 연속된 공간(버킷 배열?)에 저장되므로 캐시 hit ratio가 좋음
+        * 하지만 이 장점도 크기가 커질수록 사라짐 -> 배열이 커질수록 hit ratio ↓
+        * remove가 빈번하게 호출되는 상황에서 Seperate Chaining가 유리(삭제에 용이한 자료구조)
+        * Java 8부터는 요소의 개수에 따라 LinkedList와 Tree 구조를 오감
+      
+  *  **버킷 동적 확장**
+     *  버킷 개수가 적은 경우, 빈번한 충돌로 인해 성능 이슈가 발생할 수 있음
+     *  따라서 HashMap은 일정 개수에 도달하면 버킷의 크기를 2배로 늘림(기본값 16)
+     *  하지만 확장마다 모든 데이터를 읽어 Seperate Chaining을 다시 구성해야함
+     *  따라서 저장될 데이터의 개수를 미리 예측할 수 있다면 생성자의 인자로 미리 버킷 개수를 지정해 불필요한 Seperate Chaining 재구성을 방지할 수 있음
+     *   버킷 개수를 2배씩 확장시킬 때, X % M와 같은 계산식을 사용함(X == hashCode(), M -> 2 ^ a)
+     *   이때 X가 아무리 32bit에 넓게 분배되었다고 해도 계산에는 하위 a bit만 사용되게 되어 충돌이 빈번하게 일어날 수 있음
+     *   이를 위해 **보조 해시 함수**를 사용함
+        *  보조 해시 함수는 키의 해시값(key.hashCode(), 즉 X % M의 X)을 변형함  
 </div>
 </details>
