@@ -127,3 +127,29 @@
         * System.gc()로 직접 gc를 호출할 수 있지만 금기시 됨 -> 호출 시점에서 프로세스의 상태를 알 수 없음, 어떤 스레드에서 어떤 동작을 하는지는 매 순간 다르므로 직접 호출하는 건 위험함
 </div>
 </details>
+
+<details>
+<summary>자료구조</summary>
+<div markdown="1">
+
+* **Hash**
+  *  HashTable & HashMap
+  *  자주 사용되는 건 HashMap
+  *  **HashMap**
+     *  동기화를 지원하지 않음 -> 병렬 실행시 문제 발생 -> ConcurrentHashMap 사용
+     *  보조 해시 함수를 사용해 성능 상의 이점이 있음 -> 충돌 빈도 ↓
+     *  내부적으로 배열로 구성되어 있음 -> hash bucket
+     *  key 값을 ```hashcode()```라는 메소드를 통해 int형의 hash 값으로 변환 후 bucket의 크기로 modulo 연산을 한 값을 인덱스로 사용함 -> ```bucket[hashcode() % M]```
+     *  이때 key 값이 달라도 1/M의 확률로 같은 인덱스 값이 나올 수 있음 -> hash collision
+     *  M을 키우면 확률은 낮아지지만 2^32를 벗어날 수는 없음(int 범위)
+   
+  *  **Hash Collision**
+     *  크게 2가지 해결 방법
+     *  Open Addressing - 다른 비어있는 버킷을 찾아 삽입
+        *  Linear Probing - 순차적으로 비어있는 버킷 탐색
+        *  Quadratic Probing - 2차함수(?)를 이용해 버킷 탐색
+     *  Seperate Chaining - 중복되는 버킷을 기준으로 LinkedList or Red-Black Tree 사용
+        *  각 버킷을 head로 지정하고 중복 발생시 add 하는 방법(자료구조만 다름)
+     *  Java는 Seperate Chaining 사용
+</div>
+</details>
