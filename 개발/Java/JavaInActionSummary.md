@@ -264,11 +264,11 @@
            leftTask.fork();
 
            ForkJoinSumCalc rightTask = new ForkJoinSumCalc(nums, start + length / 2, end);
-           //2개의 서브태스크 모두 fork를 사용하지 않는 이유로는 스레드 재사용(todo: why?)
+           // 2개의 서브태스크 모두 fork를 사용하지 않는 이유로는 스레드 재사용(todo: why?)
   
            Long rightRes = rightTask.compute();
            Long leftRes = leftTask.join();
-           //join()을 실행하면 leftTask가 모두 완료될 때까지 block됨 ->  join()을 나중에 호출
+           // join()을 실행하면 leftTask가 모두 완료될 때까지 block됨 ->  join()을 나중에 호출
 
            return rightRes + leftRes;
        }
@@ -286,12 +286,15 @@
    public static long forkJoinSum(long n) {
        long[] num = LongStream.rangeClosed(1,n).toArray();
        return new ForkJoinPool().invoke(new ForkJoinSumCalc(num));
-       //일반적으로는 ForkJoinPool을 Singleton으로 생성
-       //ForkJoinPool이 아니라 task에도 invoke 메소드가 존재함
-       //ForkJoinPool.invoke로 실행해야 스레드풀의 Worker Thread를 할당받는 것을 보장할 수 있음
+       // 일반적으로는 ForkJoinPool을 Singleton으로 생성
+       // ForkJoinPool이 아니라 task에도 invoke 메소드가 존재함
+       // ForkJoinPool.invoke로 실행해야 스레드풀의 Worker Thread를 할당받는 것을 보장할 수 있음
    }
     ```
-   *   
+   *  Fork/Join을 이용한 병렬 실행이 순차 실행보다 항상 빠른 것은 아님
+   *  서브태스크가 작업울 수행하는 시간이 새로운 서브태스크를 fork하는 시간보다 길어야 함
+   *  **작업 훔치기**를 통해 각 스레드에 서브태스크를 공정하게 분할함
+      *   각 스레드는 자신에게 할당된 태스크를 모두 완료하면 다른 스레드의 큐에서 태스크를 가져와 수행함
     
 </div>
 </details>
