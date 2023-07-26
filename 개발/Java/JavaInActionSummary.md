@@ -228,6 +228,70 @@
      * ArrayList, Intstream.range -> excellent / HashSet, TreeSet -> good / LinkedList, Stream.iterate -> bad
   *  파이프라인의 중간에서 스트림의 특성 변화도 병렬 실행에 영향을 미침 -> filter와 같은 연산은 스트림의 길이을 예측할 수 없게 만듦 -> 효율적인 분할 X
   *  병렬 실행 후, 병합 과정의 비용 또한 고려해야함 -> 병합 과정이 비싸면 병렬 실행의 성능이 상쇄될 수 있음
+  *  내부적으로 Fork/Join 프레임워크를 이용해 구현되어 있음
+ 
+* **Fork/Join 프레임워크**
+  *  병렬화할 수 있는 작업을 서브태스크로 분할해 처리하고 각 결과를 합쳐 전체 결과 도출
+  *  서브태스크를 스레드풀(ForkJoinPool)의 스레드의 분산 할당하는 ExecutorService를 implement함
+  *  RecursiveTask<R>의 서브클래스를 정의하고 compute 메소드를 오버라이딩 해야함
+  *  compute 메소드는 기존의 태스크를 더 이상 분할할 수 없을 때까지 서브태스크로 쪼개고, 서브태스크의 결과를 합침
+  *  ex. 배열의 요소의 합을 구하는 클래스
+    ```
+       public class ForkJoinSumCalc extends RecursiveTask<Long> {
+       private final long[] nums;
+       private final int start;
+       private final int end;
+       public static final long THRESHOLD = 10_000;
+
+       public ForkJoinSumCalc(long[] nums) {
+           this(nums, 0, nums.length);
+       }
+
+       private ForkJoinSumCalc(long[] nums, int start, int end) {
+           this.nums = nums;
+           this.start = start;
+           this.end = end;
+       }
+       @Override
+       protected Long compute() {
+           int length = end - start;
+
+           if(length <= THRESHOLD) {
+               return count(nums);
+           }
+
+           ForkJoinSumCalc leftTask = new ForkJoinSumCalc(nums, start, start + length / 2);
+           leftTask.fork();
+
+           ForkJoinSumCalc rightTask = new ForkJoinSumCalc(nums, start + length / 2, end);
+           //2개의 서브태스크 모두 fork를 사용하지 않는 이유로는 스레드 재사용(todo: why?)
+  
+           Long rightRes = rightTask.compute();
+           Long leftRes = leftTask.join();
+           //join()을 실행하면 leftTask가 모두 완료될 때까지 block됨 ->  join()을 나중에 호출
+
+           return rightRes + leftRes;
+       }
+
+       private long count(long[] nums) {
+           long res = 0;
+           for(int i = start; i < end; i++) {
+               res += num[i];
+           }
+
+           return res;
+       }
+   }
+
+   public static long forkJoinSum(long n) {
+       long[] num = LongStream.rangeClosed(1,n).toArray();
+       return new ForkJoinPool().invoke(new ForkJoinSumCalc(num));
+       //일반적으로는 ForkJoinPool을 Singleton으로 생성
+       //ForkJoinPool이 아니라 task에도 invoke 메소드가 존재함
+       //ForkJoinPool.invoke로 실행해야 스레드풀의 Worker Thread를 할당받는 것을 보장할 수 있음
+   }
+    ```
+   *   
     
 </div>
 </details>
