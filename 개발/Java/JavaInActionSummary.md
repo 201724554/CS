@@ -203,7 +203,7 @@
 </details>
 
 <details>
-<summary>chapter 7 ~ 9</summary>
+<summary>chapter 7 ~ 10</summary>
 <div markdown="1">
 
 * **병렬 스트림**
