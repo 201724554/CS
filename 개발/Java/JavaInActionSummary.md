@@ -81,7 +81,7 @@
 </details>
 
 <details>
-<summary>chapter 4 ~ 6</summary>
+<summary>chapter 4 ~ 7</summary>
 <div markdown="1">
 
 * **Stream**
@@ -199,13 +199,7 @@
       * UNORDERED - 리듀싱의 결과는 스트림 요소의 방문 순서나 누적 순서에 영향을 받지 않는다
       * CONCURRENT - 다중 스레드에서 accumulator 함수를 동시에 호출할 수 있고 이 Collector는 스트림의 병렬 리듀싱을 수행할 수 있다
       * IDENTITY_FINISH - finisher()가 반환하는 함수는 단순히 identity()를 적용하므로 이를 생략할 수 있다, 즉 누적자를 결과로 그대로 사용 가능
-</div>
-</details>
-
-<details>
-<summary>chapter 7 ~ 10</summary>
-<div markdown="1">
-
+     
 * **병렬 스트림**
   *  ```parallelStream```을 이용하거나 기존 스트림에 ```parallel()```을 추가함으로써 병렬 스트림을 사용할 수 있음
   *  내부적으로 ```ForkJoinPool```을 사용함
@@ -229,7 +223,7 @@
   *  파이프라인의 중간에서 스트림의 특성 변화도 병렬 실행에 영향을 미침 -> filter와 같은 연산은 스트림의 길이을 예측할 수 없게 만듦 -> 효율적인 분할 X
   *  병렬 실행 후, 병합 과정의 비용 또한 고려해야함 -> 병합 과정이 비싸면 병렬 실행의 성능이 상쇄될 수 있음
   *  내부적으로 Fork/Join 프레임워크를 이용해 구현되어 있음
-  *  **Spliterator**를 이용해 스트림을 병렬로 분할하고, 분할 기준을 정의할 수 있음
+  *  **Spliterator**를 이용해 스트림을 병렬로 분할하고, 분할 기준을 직접 정의할 수 있음
  
 * **Fork/Join 프레임워크**
   *  병렬화할 수 있는 작업을 서브태스크로 분할해 처리하고 각 결과를 합쳐 전체 결과 도출
@@ -296,6 +290,38 @@
    *  서브태스크가 작업울 수행하는 시간이 새로운 서브태스크를 fork하는 시간보다 길어야 함
    *  **작업 훔치기**를 통해 각 스레드에 서브태스크를 공정하게 분할함
       *   각 스레드는 자신에게 할당된 태스크를 모두 완료하면 다른 스레드의 큐에서 태스크를 가져와 수행함
-    
+</div>
+</details>
+
+<details>
+<summary>chapter 8 ~ 10</summary>
+<div markdown="1">
+
+* **컬렉션 팩토리**
+   *   Java 9에서는 컬렉션 팩토리 메소드를 제공함
+     *   Arrays.asList("a", "b"...), List.of("a", "b"...)
+     *   asList의 경우, 요소를 갱신하는 것은 가능하지만 새로운 요소를 추가하는 건 허용되지 않음(of는 모두 X) -> UnsupportedOperationException
+     *   of 메소드의 경우, 매개변수의 개수가 다른 (E e1, E e2,...) 형식과 (E... e) 형식이 오버로딩 돼있음
+     *   가변 인수로 인자를 받는 경우, 내부적으로 추가 배열을 할당해 리스트로 감쌂 -> 배열 할당 및 초기화 + GC 비용 발생
+     *   따라서 10개 인수 까지는 메소드가 오버로딩 돼있음
+     *   Map의 경우, 2가지로 생성 가능 -> Map.of(Key1, Value1, Key2, Value2...), Map.ofEntries(Map.entry(Key, Value), Map.entry(Key, Value)...)
+     *   전자의 경우, 10개의 Key-Value만 가능, 후자는 가변 인수
+ 
+* **List, Set 처리**
+  * List의 요소를 삭제하는 기존의 코드는 다음과 같다
+    ```
+    for(Element element : elements) {
+       if(element == ...) {
+           elements.remove(element);
+       }
+    }
+    ```
+  *   이 경우, ConcurrentModificationException이 발생함 -> for-each문은 내부적으로 Iterator를 사용하기 때문에 List의 상태와 Iterator가 호환되지 않음
+  *   따라서 Java 8부터 removeIf, replaceAll 등의 메소드를 지원함
+ 
+* **Map 처리**
+  * 
+       
+ 
 </div>
 </details>
