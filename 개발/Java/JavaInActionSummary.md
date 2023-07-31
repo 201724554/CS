@@ -320,6 +320,7 @@
   *   따라서 Java 8부터 removeIf, replaceAll 등의 메소드를 지원함
  
 * **Map 처리**
+  *   Map 내부의 Entry를 forEach(), comparingByValue(), comparingByKey() 등의 메소드로 작업할 수 있음 
 
        
  
