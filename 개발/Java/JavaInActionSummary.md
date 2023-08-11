@@ -323,8 +323,11 @@
   *   Map 내부의 Entry를 ```forEach()```로 순회, ```comparingByValue(), comparingByKey()```로 정렬 등의 작업을 수행할 수 있음
   *   외에도 ```getOrDefault()```로 유연한 조회, ```computeIfAbsent(), computeIfPresent()```등으로 경우에 따른 계산을 수행할 수 있음
   *   ```replace(), replaceAll()```을 통해 수정, ```merge()```를 통해 복잡한 병합을 수행할 수 있음
-
-       
- 
+  *   ConcurrentHashMap을 통해 기존의 HashMap의 동시성을 확보
+     *   내부 자료구조의 특정 부분에만 락을 걸어 동시 추가, 갱신 작업을 허용함
+     *   HashTable과 달리 HashMap은 비동기로 동작해 동시 작업시 문제가 발생할 수 있었음
+     *   기본적으로 forEach, reduce, search 연산을 지원하고, 해당 연산은 락을 걸지 않기 때문에 전체적인 상태에 의존하지 말아야 함
+     *   병렬성 threshold를 지정해야 함 -> 기준 값이 Map의 크기보다 작으면 순차적, 1이면 스레드 풀을 이용해 병렬성 최대화, Long.MAX_VALUE로 지정하면 한 개의 스레드를 사용함
+     *   size()외에도  mappingCount를 제공함으로써 크기가 int의 범위를 넘어가는 경우를 대처할 수 있음
 </div>
 </details>
