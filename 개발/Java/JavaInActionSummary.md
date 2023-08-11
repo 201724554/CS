@@ -304,7 +304,7 @@
      *   of 메소드의 경우, 매개변수의 개수가 다른 (E e1, E e2,...) 형식과 (E... e) 형식이 오버로딩 돼있음
      *   가변 인수로 인자를 받는 경우, 내부적으로 추가 배열을 할당해 리스트로 감쌂 -> 배열 할당 및 초기화 + GC 비용 발생
      *   따라서 10개 인수 까지는 메소드가 오버로딩 돼있음
-     *   Map의 경우, 2가지로 생성 가능 -> Map.of(Key1, Value1, Key2, Value2...), Map.ofEntries(Map.entry(Key, Value), Map.entry(Key, Value)...)
+     *   Map의 경우, 2가지로 생성 가능 -> ```Map.of(Key1, Value1, Key2, Value2...), Map.ofEntries(Map.entry(Key, Value), Map.entry(Key, Value)...)```
      *   전자의 경우, 10개의 Key-Value만 가능, 후자는 가변 인수
  
 * **List, Set 처리**
@@ -317,10 +317,12 @@
     }
     ```
   *   이 경우, ConcurrentModificationException이 발생함 -> for-each문은 내부적으로 Iterator를 사용하기 때문에 List의 상태와 Iterator가 호환되지 않음
-  *   따라서 Java 8부터 removeIf, replaceAll 등의 메소드를 지원함
+  *   따라서 Java 8부터 ```removeIf(), replaceAll()``` 등의 메소드를 지원함
  
 * **Map 처리**
-  *   Map 내부의 Entry를 forEach(), comparingByValue(), comparingByKey() 등의 메소드로 작업할 수 있음 
+  *   Map 내부의 Entry를 ```forEach()```로 순회, ```comparingByValue(), comparingByKey()```로 정렬 등의 작업을 수행할 수 있음
+  *   외에도 ```getOrDefault()```로 유연한 조회, ```computeIfAbsent(), computeIfPresent()```등으로 경우에 따른 계산을 수행할 수 있음
+  *   ```replace(), replaceAll()```을 통해 수정, ```merge()```를 통해 복잡한 병합을 수행할 수 있음
 
        
  
